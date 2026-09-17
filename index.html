@@ -3,59 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Online Examination Platform</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background-color: #f0f2f5; color: #333; }
-        .container { background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 800px; margin: auto; }
-        h2 { color: #1a73e8; margin-top: 0; }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-        .input-group input { width: 95%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
-        .student-bar { background: #e8f0fe; padding: 10px 15px; border-radius: 6px; margin-bottom: 15px; font-size: 0.95rem; }
-        .timer-box { font-size: 1.25rem; font-weight: bold; color: #d93025; background: #fce8e6; padding: 10px; border-radius: 6px; display: inline-block; margin-bottom: 20px; }
-        .exam-layout { display: flex; gap: 20px; align-items: flex-start; }
-        .sidebar { width: 140px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
-        .subject-btn { background-color: #f8f9fa; color: #3c4043; border: 2px solid #dadce0; padding: 12px; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; }
-        .subject-btn:hover { background-color: #e8eaed; }
-        .subject-btn.active { background-color: #1a73e8; color: white; border-color: #1a73e8; }
-        .master-submit-btn { background-color: #137333; color: white; border: none; padding: 15px 12px; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
-        .master-submit-btn:hover { background-color: #0b5121; }
-        .main-content { flex: 1; min-width: 0; }
-        .palette-panel { background: #f8f9fa; border: 1px solid #dadce0; border-radius: 8px; padding: 12px; margin-bottom: 20px; }
-        .palette-title { font-weight: bold; font-size: 0.9rem; margin-bottom: 8px; color: #5f6368; text-align: center; }
-        .palette-grid { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-        .palette-btn { background-color: #e8eaed; color: #3c4043; border: 1px solid #dadce0; width: 40px; height: 40px; font-size: 0.95rem; font-weight: bold; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .palette-btn:hover { background-color: #dadce0; }
-        .palette-btn.active { background-color: #1a73e8 !important; color: white !important; border-color: #1a73e8; }
-        .palette-btn.answered { background-color: #137333 !important; color: white !important; border-color: #137333; }
-        .progress-bar { font-size: 1rem; color: #1a73e8; margin-bottom: 10px; font-weight: bold; border-bottom: 2px solid #e8eaed; padding-bottom: 10px;}
-        .question-container { min-height: 150px; }
-        .question-text { font-size: 1.1rem; font-weight: bold; color: #202124; margin-bottom: 15px;}
-        .options label { display: block; margin: 10px 0; cursor: pointer; font-size: 1.05rem; padding: 8px; border-radius: 4px; transition: background 0.2s;}
-        .options label:hover { background: #f1f3f4; }
-        .options input[type="radio"] { margin-right: 10px; transform: scale(1.2);}
-        .nav-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 20px; border-top: 2px solid #e8eaed; padding-top: 20px;}
-        button.action-btn { width: 100%; border: none; padding: 12px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; color: white; transition: background 0.2s; }
-        .primary-btn { background-color: #1a73e8; }
-        .primary-btn:hover { background-color: #1557b0; }
-        .secondary-btn { background-color: #5f6368; }
-        .secondary-btn:hover { background-color: #45474a; }
-        .scorecard-header { background: #1a73e8; color: white; padding: 10px; border-radius: 6px 6px 0 0; }
-        .scorecard-body { border: 2px solid #1a73e8; border-top: none; padding: 20px; border-radius: 0 0 6px 6px; background: #fafafa; }
-        .score-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #ccc; font-size: 1.1rem; }
-        .score-total { display: flex; justify-content: space-between; padding: 15px 10px; background: #e6f4ea; color: #137333; font-weight: bold; font-size: 1.3rem; border-radius: 6px; margin-top: 15px; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
-    
     <div id="loginView">
         <h2>Student Examination Portal</h2>
         <p style="color: #666;">Please sign in to begin your evaluation.</p>
         <hr>
         <div class="input-group">
             <label>Student Name:</label>
-            <input type="text" id="studentName" placeholder="e.g. ashin">
+            <input type="text" id="studentName" placeholder="e.g. John">
         </div>
         <div class="input-group">
             <label>Student ID / Roll No:</label>
@@ -65,7 +24,7 @@
     </div>
 
     <div id="examView" style="display: none;">
-        <h2>Online Examination</h2>
+        <h2>Online Examination.</h2>
         
         <div class="student-bar">
             <span>Student: <b id="displayStudent"></b></span> | 
@@ -78,6 +37,7 @@
                 <button type="button" class="subject-btn" id="tab-Java" onclick="switchSubject('Java')">Java</button>
                 <button type="button" class="subject-btn" id="tab-C++" onclick="switchSubject('C++')">C++</button>
                 <button type="button" class="subject-btn" id="tab-C" onclick="switchSubject('C')">C</button>
+                
                 <button type="button" class="master-submit-btn" onclick="confirmSubmission()">Submit All Exams</button>
             </div>
 
@@ -122,6 +82,10 @@
             <p><b>Student ID:</b> <span id="cardId"></span></p>
             <hr>
             <div id="marks-display-area" style="text-align: left; margin-top: 20px;"></div>
+            
+            <button type="button" class="action-btn primary-btn" onclick="window.print()" style="margin-top: 30px; width: auto; padding: 12px 30px;">
+                Download / Print Report Card
+            </button>
         </div>
     </div>
 </div>
@@ -166,9 +130,10 @@
         ]
     };
 
-    let remainingTime = 180; // Set to 3 minutes
+    let remainingTime = 180; 
     let intervalTracker;
     let storedStudentId = "";
+    
     let currentSubject = "Java"; 
     let currentQuestionIndex = 0; 
     
@@ -233,7 +198,6 @@
             clockDisplay.textContent = 
                 `${hrs < 10 ? '0'+hrs : hrs}:${mins < 10 ? '0'+mins : mins}:${secs < 10 ? '0'+secs : secs}`;
             
-            // Auto-submits when remaining time reaches 0
             if (remainingTime <= 0) {
                 clearInterval(intervalTracker);
                 sendMasterSubmission(); 
@@ -321,7 +285,8 @@
     }
 
     function confirmSubmission() {
-        if (confirm("Are you sure you want to submit? This will finish all 3 subjects (Java, C++, and C).")) {
+        const confirmation = confirm("Are you sure you want to submit? This will finish all 3 subjects (Java, C++, and C).");
+        if (confirmation) {
             sendMasterSubmission();
         }
     }
@@ -347,31 +312,49 @@
             },
             body: rawPayload
         })
-        .then(res => res.text())
-        .then(serverMessage => {
-            const dataParts = serverMessage.split(',');
+        .then(res => res.json()) 
+        .then(data => {
             let htmlOutput = "";
             
-            for (let part of dataParts) {
-                let kv = part.split(':');
-                if (kv.length === 2) {
-                    let title = kv[0].trim();
-                    let score = kv[1].trim();
+            for (let subj of ["Java", "C++", "C"]) {
+                htmlOutput += `<div class="report-section">`;
+                htmlOutput += `<h4>${subj} Assessment (Score: ${data.scores[subj]} / 20.0)</h4>`;
+                
+                for (let i = 0; i < 10; i++) {
+                    let studentAns = studentAnswers[subj][i];
+                    let correctAns = data.correctAnswers[subj][i];
+                    let qText = questionDatabase[subj][i].q;
                     
-                    if (title === "Total") {
-                        htmlOutput += `<div class="score-total"><span>FINAL TOTAL SCORE</span><span>${score} / 60.0</span></div>`;
-                    } else {
-                        htmlOutput += `<div class="score-row"><span>${title} Marks:</span><span>${score} / 20.0</span></div>`;
+                    let isCorrect = (studentAns === correctAns);
+                    let isSkipped = (studentAns === '');
+                    
+                    let cardClass = isCorrect ? "correct-ans" : (isSkipped ? "skipped-ans" : "wrong-ans");
+                    let statusHtml = isCorrect ? `<span class="correct-text">Correct (+2.0)</span>` : 
+                                    (isSkipped ? `<span style="color:#5f6368;">Skipped (0.0)</span>` : `<span class="wrong-text">Wrong (-1.0)</span>`);
+                    
+                    htmlOutput += `<div class="report-card ${cardClass}">`;
+                    htmlOutput += `<p><b>Q${i+1}:</b> ${qText}</p>`;
+                    htmlOutput += `<p>Your Answer: <b>${isSkipped ? 'None' : studentAns}</b> &nbsp;|&nbsp; Status: ${statusHtml}</p>`;
+                    
+                    if (!isCorrect) {
+                        let fullAnswerText = correctAns === 'A' ? questionDatabase[subj][i].a : questionDatabase[subj][i].b;
+                        let textStyle = isSkipped ? 'color:#5f6368;' : 'color:#137333;';
+                        htmlOutput += `<p style="${textStyle}"><b>Correct Answer: ${fullAnswerText}</b></p>`;
                     }
+                    
+                    htmlOutput += `</div>`;
                 }
+                htmlOutput += `</div>`;
             }
+            
+            htmlOutput += `<div class="score-total"><span>FINAL TOTAL SCORE</span><span>${data.scores.Total} / 60.0</span></div>`;
             document.getElementById('marks-display-area').innerHTML = htmlOutput;
         })
         .catch(error => {
-            document.getElementById('marks-display-area').innerHTML = "<span style='color: red;'>Error communicating with backend.</span>";
+            console.error(error);
+            document.getElementById('marks-display-area').innerHTML = "<span style='color: red;'>Error retrieving detailed report from backend.</span>";
         });
     }
 </script>
-
 </body>
 </html>
