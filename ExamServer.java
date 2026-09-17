@@ -22,6 +22,9 @@ class Question {
     public boolean checkAnswer(char response) {
         return this.correctAnswer == Character.toUpperCase(response);
     }
+    public char getCorrectAnswer() { 
+        return correctAnswer; 
+    }
 }
 
 class NegativeMarkedQuestion extends Question {
@@ -84,7 +87,7 @@ class ExamResult {
             char studentAns = ansStr.toUpperCase().charAt(0);
             Question q = questions.get(i); 
 
-            if (studentAns == 'S') continue; // Skipped / Unanswered question
+            if (studentAns == 'S') continue; // Skipped
 
             if (q.checkAnswer(studentAns)) {
                 total += exam.getMarksPerQuestion(); 
@@ -105,21 +108,29 @@ public class ExamServer {
     private static long examStartTimeMills; 
     private static final Map<String, String> studentDatabase = new HashMap<>();
 
+    private static String getJsonArray(Exam exam) {
+        StringBuilder sb = new StringBuilder();
+        List<Question> qs = exam.getQuestions();
+        for (int i = 0; i < qs.size(); i++) {
+            sb.append("\"").append(qs.get(i).getCorrectAnswer()).append("\"");
+            if (i < qs.size() - 1) sb.append(",");
+        }
+        return sb.toString();
+    }
+
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
         
-        // Registered Student Database
         studentDatabase.put("STU001", "kshitij");
         studentDatabase.put("STU002", "ashin");
         studentDatabase.put("STU003", "shaza");
         studentDatabase.put("STU004", "avani");
 
-        // Initialize exams for three subjects
         Exam javaExam = new Exam(2.0, 10800); 
         Exam cppExam = new Exam(2.0, 10800);
         Exam cExam = new Exam(2.0, 10800);
 
-        // JAVA Questions Configuration
+        // JAVA
         javaExam.addQuestion(new NegativeMarkedQuestion("What is the size of primitive int data type in java?", 'B', 1.0));
         javaExam.addQuestion(new NegativeMarkedQuestion("Inheritance keyword?", 'A', 1.0));
         javaExam.addQuestion(new NegativeMarkedQuestion("Which component executes Java bytecode?", 'A', 1.0));
@@ -131,7 +142,7 @@ public class ExamServer {
         javaExam.addQuestion(new NegativeMarkedQuestion("Which package is imported by default in all Java files?", 'B', 1.0));
         javaExam.addQuestion(new NegativeMarkedQuestion("Does Java support direct multiple class inheritance?", 'B', 1.0));
 
-        // C++ Questions Configuration
+        // C++
         cppExam.addQuestion(new NegativeMarkedQuestion("Who created C++?", 'A', 1.0));
         cppExam.addQuestion(new NegativeMarkedQuestion("What is the output operator in C++?", 'A', 1.0));
         cppExam.addQuestion(new NegativeMarkedQuestion("How do you deallocate memory assigned by 'new'?", 'B', 1.0));
@@ -143,7 +154,7 @@ public class ExamServer {
         cppExam.addQuestion(new NegativeMarkedQuestion("What does STL stand for?", 'A', 1.0));
         cppExam.addQuestion(new NegativeMarkedQuestion("Is 'cin' used for input or output?", 'A', 1.0));
 
-        // C Questions Configuration
+        // C
         cExam.addQuestion(new NegativeMarkedQuestion("What is the format specifier for an integer in C?", 'A', 1.0));
         cExam.addQuestion(new NegativeMarkedQuestion("Which function is used for dynamic memory allocation?", 'A', 1.0));
         cExam.addQuestion(new NegativeMarkedQuestion("Does C support Object-Oriented Programming?", 'B', 1.0));
@@ -157,7 +168,6 @@ public class ExamServer {
         
         examStartTimeMills = System.currentTimeMillis();
 
-        // LOGIN ENDPOINT
         server.createContext("/login", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
@@ -195,7 +205,6 @@ public class ExamServer {
             }
         });
 
-        // MULTI-SUBJECT SUBMISSION ENDPOINT
         server.createContext("/submit", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
@@ -210,7 +219,6 @@ public class ExamServer {
                 }
                 
                 if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-                    // Uses examStartTimeMills to satisfy compiler/IDE warning checks
                     long elapsedSec = (System.currentTimeMillis() - examStartTimeMills) / 1000;
                     String studentId = exchange.getRequestHeaders().getFirst("X-Student-ID");
                     String studentName = studentDatabase.getOrDefault(studentId, "Unknown Student");
@@ -220,10 +228,8 @@ public class ExamServer {
                     s.close(); 
                     
                     Student activeStudent = new Student(studentId, studentName);
-                    
                     double javaScore = 0.0, cppScore = 0.0, cScore = 0.0;
                     
-                    // Format: Java=A,S,B...|C++=A,B...|C=B...
                     String[] subjectPayloads = rawPayload.split("\\|");
                     for (String subPayload : subjectPayloads) {
                         String[] parts = subPayload.split("=");
@@ -249,14 +255,28 @@ public class ExamServer {
                     
                     double totalScore = javaScore + cppScore + cScore;
                     
-                    String response = String.format("Java:%.1f, C++:%.1f, C:%.1f, Total:%.1f", 
-                                             javaScore, cppScore, cScore, totalScore);
+                    StringBuilder json = new StringBuilder();
+                    json.append("{");
+                    json.append("\"scores\": {\"Java\":").append(javaScore)
+                        .append(", \"C++\":").append(cppScore)
+                        .append(", \"C\":").append(cScore)
+                        .append(", \"Total\":").append(totalScore).append("}, ");
                     
+                    json.append("\"correctAnswers\": {");
+                    json.append("\"Java\": [").append(getJsonArray(javaExam)).append("], ");
+                    json.append("\"C++\": [").append(getJsonArray(cppExam)).append("], ");
+                    json.append("\"C\": [").append(getJsonArray(cExam)).append("]");
+                    json.append("}");
+                    json.append("}");
+                    
+                    String response = json.toString();
                     System.out.println("Submission received at " + elapsedSec + "s for " + studentName + ". Total Marks: " + totalScore);
 
-                    exchange.sendResponseHeaders(200, response.length());
+                    exchange.getResponseHeaders().add("Content-Type", "application/json");
+                    byte[] responseBytes = response.getBytes();
+                    exchange.sendResponseHeaders(200, responseBytes.length);
                     OutputStream os = exchange.getResponseBody();
-                    os.write(response.getBytes());
+                    os.write(responseBytes);
                     os.close();
                 }
             }
